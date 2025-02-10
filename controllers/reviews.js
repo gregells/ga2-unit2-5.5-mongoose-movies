@@ -4,6 +4,7 @@ module.exports = {
   create,
   delete: deleteReview,
   edit,
+  update,
 };
 
 async function create(req, res) {
@@ -46,6 +47,22 @@ async function edit(req, res) {
     'reviews.user': req.user._id
   });
   const review = movie.reviews.id(req.params.id);
-
+  
   res.render('reviews/edit', { title: 'Edit Review', review });
+}
+
+async function update(req, res) {
+  const movie = await Movie.findOne({
+    'reviews._id': req.params.id,
+    'reviews.user': req.user._id
+  });
+  const review = movie.reviews.id(req.params.id);
+  Object.assign(review, req.body);
+  
+  try {
+    movie.save();
+    res.redirect(`/movies/${movie._id}`);
+  } catch (err) {
+    console.log(err);
+  }
 }
