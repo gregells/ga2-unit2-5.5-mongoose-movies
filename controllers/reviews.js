@@ -3,6 +3,7 @@ const Movie = require('../models/movie');
 module.exports = {
   create,
   delete: deleteReview,
+  edit,
 };
 
 async function create(req, res) {
@@ -37,4 +38,14 @@ async function deleteReview(req, res) {
   } catch (err) {
     console.log(err);
   }
+}
+
+async function edit(req, res) {
+  const movie = await Movie.findOne({
+    'reviews._id': req.params.id,
+    'reviews.user': req.user._id
+  });
+  const review = movie.reviews.id(req.params.id);
+
+  res.render('reviews/edit', { title: 'Edit Review', review });
 }
